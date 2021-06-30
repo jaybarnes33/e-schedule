@@ -1,3 +1,5 @@
+import "@fontsource/roboto"
+
 import Head from "next/head"
 import { AppProps } from "next/app"
 import { useEffect } from "react"
