@@ -1,18 +1,18 @@
-import Head from "next/head";
-import { AppProps } from "next/app";
-import { ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { useEffect } from "react";
-import theme from "../lib/theme";
+import Head from "next/head"
+import { AppProps } from "next/app"
+import { useEffect } from "react"
+import { ThemeProvider } from "@material-ui/core/styles"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import theme from "@/lib/theme"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
+    const jssStyles = document.querySelector("#jss-server-side")
     if (jssStyles) {
-      jssStyles.parentElement!.removeChild(jssStyles);
+      jssStyles.parentElement!.removeChild(jssStyles)
     }
-  }, []);
+  }, [])
 
   return (
     <>
@@ -29,5 +29,5 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </ThemeProvider>
     </>
-  );
+  )
 }
