@@ -10,6 +10,14 @@ let theme = createTheme({
     },
     h3: {
       fontFamily: "'Montserrat', sans-serif"
+    },
+    h4: {
+      fontFamily: "'Montserrat', sans-serif"
+    }
+  },
+  palette: {
+    background: {
+      default: "#fafafa"
     }
   }
 })
