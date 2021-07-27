@@ -16,10 +16,11 @@ interface IContextProps {
 export const UserContext = createContext({} as IContextProps)
 
 const UserContextProvider: React.FC = ({ children }) => {
-  const { pathname } = useRouter()
+  const { pathname, replace } = useRouter()
   const [user, setUser] = useState<TUser>(null)
   const [token, setToken] = useState("")
   const [fetchingUser, setFetchingUser] = useState(true) // Helpful, to update the UI accordingly.
+  const isAdmin = pathname.includes("admin")
 
   useEffect(() => {
     // Listen authenticated user
@@ -33,6 +34,18 @@ const UserContextProvider: React.FC = ({ children }) => {
             // You could also look for the user doc in your Firestore (if you have one):
             // const userDoc = await firebase.firestore().doc(`users/${uid}`).get()
             setUser({ uid, displayName, email, photoURL })
+
+            // Set Role
+            firebase
+              .firestore()
+              .doc(`users/${user.uid}`)
+              .get()
+              .then(doc => {
+                setUser(prevUser => ({
+                  ...prevUser,
+                  ...(doc?.data() || {})
+                }))
+              })
           } else setUser(null)
         } catch (error) {
           // Most probably a connection error. Handle appropriately.
@@ -55,8 +68,7 @@ const UserContextProvider: React.FC = ({ children }) => {
     }
   }, [])
 
-  const login = () => {
-    const isAdmin = pathname.includes("admin")
+  const login = async () => {
     const provider = new firebase.auth.GoogleAuthProvider()
 
     provider.addScope(
@@ -65,27 +77,33 @@ const UserContextProvider: React.FC = ({ children }) => {
         : "https://www.googleapis.com/auth/spreadsheets.readonly"
     )
 
-    firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then(result => {
-        const { credential } = result
+    try {
+      const { credential, user } = await firebase
+        .auth()
+        .signInWithPopup(provider)
 
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // @ts-ignore
-        const token = credential?.accessToken
-        setToken(token)
-      })
-      .catch(error => {
-        // Handle Errors here.
-        const errorCode = error.code
-        const errorMessage = error.message
-        // The email of the user's account used.
-        const email = error.email
-        // The firebase.auth.AuthCredential type that was used.
-        const credential = error.credential
-        // ...
-      })
+      // @ts-ignore
+      const token = credential?.accessToken
+      setToken(token)
+
+      const role = isAdmin ? "ADMIN" : "USER"
+
+      replace(isAdmin ? "/admin/dashboard" : "/")
+
+      firebase
+        .firestore()
+        .doc(`users/${user?.uid}`)
+        .set({ role })
+        .then(() => setUser(prevUser => ({ ...prevUser, role })))
+        .catch(error => console.log(error))
+    } catch (error) {
+      // const errorCode = error.code
+      const errorMessage = error.message
+      // The email of the user's account used.
+      const email = error.email
+      // The firebase.auth.AuthCredential type that was used.
+      const credential = error.credential
+    }
   }
 
   const logout = () => {
