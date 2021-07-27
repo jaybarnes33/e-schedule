@@ -1,9 +1,10 @@
-import Header from "@/components/Header"
+import AuthWrapper from "@/components/AuthWrapper"
 
 export default function Home() {
   return (
-    <div>
-      <Header />
-    </div>
+    <AuthWrapper
+      heading="Sign up"
+      description="Sign up with google to gain user privileges."
+    />
   )
 }

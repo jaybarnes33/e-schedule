@@ -4,7 +4,7 @@ import Typography from "@material-ui/core/Typography"
 
 const Header = () => {
   return (
-    <AppBar variant="outlined" color="inherit">
+    <AppBar variant="outlined" elevation={0} position="static" color="inherit">
       <Toolbar>
         <Typography variant="h3" component="h1">
           E-Schedule
