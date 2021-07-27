@@ -17,6 +17,7 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
       })
 
       form.on("file", (_, file) => {
+        // @ts-ignore
         fs.rename(file.path, form.uploadDir + "/" + file.name)
       })
 
